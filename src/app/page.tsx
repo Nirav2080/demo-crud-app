@@ -1,13 +1,11 @@
 "use client";
-import UserButton from "@/components/user-Button";
-import { SessionProvider } from "next-auth/react";
+
+import Dashboard from "./dashboard/page";
 
 const Home = () => {
   return (
-    <div>
-      <SessionProvider>
-        <UserButton />
-      </SessionProvider>
+    <div className="flex flex-col items-center justify-between px-24 z-1">
+      <Dashboard />
     </div>
   );
 };
