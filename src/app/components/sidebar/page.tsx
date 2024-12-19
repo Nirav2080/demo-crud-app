@@ -15,7 +15,7 @@ import { usePathname } from "next/navigation";
 
 const Sidebar = () => {
 
-  const sidebarClassName = "fixed flex flex-col h-[100%] justify-between shadow-xl transition-all duration-300 h-full z-0 overflow-y-auto bg-white";
+  const sidebarClassName = "fixed flex flex-col h-[100%] justify-between shadow-xl transition-all duration-300 h-full z-50 overflow-y-auto bg-white";
   return (
     <div className={sidebarClassName}>
       <div className="flex h-[100%] w-full flex-col justify-start">

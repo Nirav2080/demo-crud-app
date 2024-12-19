@@ -1,25 +1,25 @@
 import mongoose, { Model, Schema } from "mongoose";
 
-interface IForm extends Document {
+interface CompanyFormData extends Document {
   name: string;
   id: string;
-  domainName: string;
+  companyWebsite: string;
   accountOwner: string;
   employees: number;
   linkedin: string;
   address: string;
 }
 
-const FormSchema: Schema<IForm> = new mongoose.Schema(
+const CompanyFormSchema: Schema<CompanyFormData> = new mongoose.Schema(
   {
     name: {
       type: String,
       required: [true, "Name is required"],
       trim: true,
     },
-    domainName: {
+    companyWebsite: {
       type: String,
-      required: [true, "DomainName is required"],
+      required: [true, "Company Website is required"],
       unique: true,
       trim: true,
     },
@@ -45,8 +45,8 @@ const FormSchema: Schema<IForm> = new mongoose.Schema(
   { timestamps: true }
 );
 
-const From: Model<IForm> =
-  mongoose.models.From ||
-  mongoose.model<IForm>("Form", FormSchema);
+const CompanyForm: Model<CompanyFormData> =
+  mongoose.models.CompanyForm ||
+  mongoose.model<CompanyFormData>("CompanyForm", CompanyFormSchema);
 
-export default From;
+export default CompanyForm;

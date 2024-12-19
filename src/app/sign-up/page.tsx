@@ -62,7 +62,7 @@ const SignUp = () => {
   };
 
   return (
-    <div className="h-full flex items-center justify-center bg-[#1b0918]">
+    <div className="h-full flex items-center justify-center inset-0 bg-black/50">
       <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
         <CardHeader>
           <CardTitle className="text-center">Sign up</CardTitle>
