@@ -1,69 +1,64 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import * as Dialog from "@radix-ui/react-dialog";
-import { Plus } from "lucide-react";
+import { Plus, TriangleAlert } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
-export default function Form() {
-
-const [formData, setFormData] = useState({
-  name: "",
-  domainName: "",
-  accountOwner: "",
-  employees: 0,
-  linkedin: "",
-  address: "",
-});
-
-
-
-
+export default function CompanyDetailsForm() {
+  const [formData, setFormData] = useState({
+    name: "",
+    companyWebsite: "",
+    accountOwner: "",
+    employees: 0,
+    linkedin: "",
+    address: "",
+  });
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    try {
-      const response = await fetch("/api/forms", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+    setPending(true);
 
-      if (response.ok) {
-        const data = await response.json();
-        alert("Form submitted successfully!");
-        console.log("API Response:", data);
-        setFormData({
-          name: "",
-          domainName: "",
-          accountOwner: "",
-          employees: 0,
-          linkedin: "",
-          address: "",
-        });
-      } else {
-        alert("Failed to submit the form.");
-      }
-    } catch (error) {
-      console.error("Error submitting the form:", error);
+    const res = await fetch("/api/companyDetails", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      setPending(false);
+      toast.success(data.message);
+    } else if (res.status === 400) {
+      setError(data.message);
+      setPending(false);
+    } else if (res.status === 500) {
+      setError(data.message);
+      setPending(false);
     }
   };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
+
   return (
     <Dialog.Root>
-      {/* Trigger Button */}
       <Dialog.Trigger asChild>
         <Button size="icon" className="bg-black">
           <Plus className="h-6 w-6 text-white" />
         </Button>
       </Dialog.Trigger>
 
-      {/* Modal Content */}
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 bg-black/50" />
-        <Dialog.Content className="fixed inset-0 flex items-center justify-center p-4">
+        <Dialog.Overlay className="fixed inset-0 z-[1000] flex items-center justify-center bg-black bg-opacity-50" />
+        <Dialog.Content className="fixed inset-0 z-[1050] flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-lg w-full max-w-lg p-6 space-y-4">
             <Dialog.Title className="text-xl font-bold">
               Add New Company
@@ -71,8 +66,12 @@ const [formData, setFormData] = useState({
             <Dialog.Description className="text-sm text-gray-600">
               Fill out the form below to add a new Company.
             </Dialog.Description>
-
-            {/* Form */}
+            {!!error && (
+              <div className="bg-destructive/15 p-3 rounded-md flex items-center gap-x-2 text-sm text-destructive mb-6">
+                <TriangleAlert />
+                <p>{error}</p>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
@@ -81,59 +80,79 @@ const [formData, setFormData] = useState({
                 >
                   Name
                 </label>
-                <Input name="name" placeholder="Enter name" required />
+                <Input
+                  type="text"
+                  name="name"
+                  disabled={pending}
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Enter name"
+                  required
+                />
               </div>
               <div>
                 <label
-                  htmlFor="link"
+                  htmlFor="companyWebsite"
                   className="block text-sm font-medium text-gray-700 pb-2"
                 >
-                  DomainName
+                  Company Website
                 </label>
                 <Input
-                  name="domainName"
                   type="url"
+                  name="companyWebsite"
+                  disabled={pending}
+                  value={formData.companyWebsite}
+                  onChange={handleChange}
                   placeholder="Enter a valid URL"
                   required
                 />
               </div>
               <div>
                 <label
-                  htmlFor="name"
+                  htmlFor="accountOwner"
                   className="block text-sm font-medium text-gray-700 pb-2"
                 >
                   AccountOwner
                 </label>
                 <Input
-                  name="accountOwner"
                   type="text"
-                  placeholder="Enter Your Domain Name"
+                  name="accountOwner"
+                  disabled={pending}
+                  value={formData.accountOwner}
+                  onChange={handleChange}
+                  placeholder="Enter Account Owner"
                 />
               </div>
               <div>
                 <label
-                  htmlFor="number"
+                  htmlFor="employees"
                   className="block text-sm font-medium text-gray-700 pb-2"
                 >
                   Employees
                 </label>
                 <Input
-                  name="employees"
                   type="number"
-                  placeholder="Enter Your Domain Name"
+                  name="employees"
+                  disabled={pending}
+                  value={formData.employees}
+                  onChange={handleChange}
+                  placeholder="Enter number of employees"
                   required
                 />
               </div>
               <div>
                 <label
-                  htmlFor="link"
+                  htmlFor="linkedin"
                   className="block text-sm font-medium text-gray-700 pb-2"
                 >
                   Linkedin
                 </label>
                 <Input
-                  name="linkedin"
                   type="url"
+                  name="linkedin"
+                  disabled={pending}
+                  value={formData.linkedin}
+                  onChange={handleChange}
                   placeholder="Enter a valid URL"
                   required
                 />
@@ -146,8 +165,12 @@ const [formData, setFormData] = useState({
                   Address
                 </label>
                 <Input
+                  type="text"
                   name="address"
-                  placeholder="Enter Your Domain Name"
+                  disabled={pending}
+                  value={formData.address}
+                  onChange={handleChange}
+                  placeholder="Enter Address"
                   required
                 />
               </div>

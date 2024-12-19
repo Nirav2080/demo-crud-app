@@ -30,7 +30,7 @@ const UserButton = () => {
     <nav>
       {session ? (
         <DropdownMenu modal={false}>
-          <DropdownMenuTrigger className="outline-none relative float-right p-4 md:p-8">
+          <DropdownMenuTrigger className="outline-none relative float-right p-4">
             <div className="flex gap-4 items-center">
               <span>{session.user?.name}</span>
               <Avatar className="size-10 hover:opacity-75 transition">

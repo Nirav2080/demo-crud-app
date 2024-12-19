@@ -54,7 +54,7 @@ const SignIn = () => {
   };
 
   return (
-    <div className="h-full flex items-center justify-center bg-[#1b0918]">
+    <div className="h-full flex items-center justify-center inset-0 bg-black/50">
       <Card className="md:h-auto w-[80%] sm:w-[420px] p-4 sm:p-8">
         <CardHeader>
           <CardTitle className="text-center">Sign in</CardTitle>
@@ -93,7 +93,7 @@ const SignIn = () => {
           <Separator />
           <div className="flex my-2 gap-10 justify-center mx-auto items-center">
             <Button
-              onClick={(e) => handleProvider(e,"google") }
+              onClick={(e) => handleProvider(e, "google")}
               variant="outline"
               size="lg"
               className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
@@ -101,7 +101,7 @@ const SignIn = () => {
               <FcGoogle className="size-8 left-2.5 top-2.5" />
             </Button>
             <Button
-              onClick={(e) => handleProvider(e,"github")}
+              onClick={(e) => handleProvider(e, "github")}
               variant="outline"
               size="lg"
               className="bg-slate-300 hover:bg-slate-400 hover:scale-110"
