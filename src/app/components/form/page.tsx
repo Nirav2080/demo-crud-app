@@ -1,9 +1,14 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import * as Dialog from "@radix-ui/react-dialog";
+import axios, { AxiosError } from "axios";
 import { Plus, TriangleAlert } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
+
+interface ApiResponse {
+  message: string;
+}
 
 export default function CompanyDetailsForm() {
   const [formData, setFormData] = useState({
@@ -15,26 +20,39 @@ export default function CompanyDetailsForm() {
     address: "",
   });
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState();
+  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPending(true);
+    setError(null);
 
-    const res = await fetch("/api/companyDetails", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    });
-    const data = await res.json();
-    if (res.ok) {
+    try {
+      const response = await axios.post<ApiResponse>(
+        "/api/companyDetails",
+        formData,
+        {
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      // Handle successful response
       setPending(false);
-      toast.success(data.message);
-    } else if (res.status === 400) {
-      setError(data.message);
-      setPending(false);
-    } else if (res.status === 500) {
-      setError(data.message);
+      toast.success(response.data.message);
+      
+    } catch (error) {
+      // Use AxiosError type to define error
+      const axiosError = error as AxiosError<{ message: string }>;
+      // Handle errors from Axios
+      if (axiosError.response) {
+        const { status, data } = axiosError.response;
+        if (status === 400 || status === 500) {
+          setError(data.message);
+        } else {
+          setError("An unexpected error occurred.");
+        }
+      } else {
+        setError("Failed to connect to the server.");
+      }
       setPending(false);
     }
   };
@@ -43,10 +61,9 @@ export default function CompanyDetailsForm() {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      [name]: value,
+      [name]: name === "employees" ? Number(value) : value,
     }));
   };
-
 
   return (
     <Dialog.Root>
@@ -112,7 +129,7 @@ export default function CompanyDetailsForm() {
                   htmlFor="accountOwner"
                   className="block text-sm font-medium text-gray-700 pb-2"
                 >
-                  AccountOwner
+                  Account Owner
                 </label>
                 <Input
                   type="text"
@@ -145,7 +162,7 @@ export default function CompanyDetailsForm() {
                   htmlFor="linkedin"
                   className="block text-sm font-medium text-gray-700 pb-2"
                 >
-                  Linkedin
+                  LinkedIn
                 </label>
                 <Input
                   type="url"
@@ -178,7 +195,9 @@ export default function CompanyDetailsForm() {
                 <Dialog.Close asChild>
                   <Button variant="secondary">Cancel</Button>
                 </Dialog.Close>
-                <Button type="submit">Submit</Button>
+                <Button type="submit" disabled={pending}>
+                  {pending ? "Submitting..." : "Submit"}
+                </Button>
               </div>
             </form>
           </div>

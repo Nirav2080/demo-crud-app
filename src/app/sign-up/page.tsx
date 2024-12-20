@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import axios, { AxiosError } from "axios";
 import { TriangleAlert } from "lucide-react";
 import { signIn } from "next-auth/react";
 import Link from "next/link";
@@ -19,7 +20,11 @@ import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { toast } from "sonner";
 
-const SignUp = () => {
+interface ApiResponse {
+  message: string;
+}
+
+export default function SignUp() {
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -27,30 +32,39 @@ const SignUp = () => {
     confirmPassword: "",
   });
   const [pending, setPending] = useState(false);
-  const [error, setError] = useState();
+  const [error, setError] = useState<string>();
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setPending(true);
 
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(form),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      setPending(false);
-      toast.success(data.message);
-      router.push("/sign-in");
-    } else if (res.status === 400) {
-      setError(data.message);
-      setPending(false);
-    } else if (res.status === 500) {
-      setError(data.message);
-      setPending(false);
-    }
+   try {
+     const response = await axios.post<ApiResponse>("/api/auth/signup", form, {
+     
+       headers: { "Content-Type": "application/json" },
+     });
+       // Handle successful response
+     setPending(false);
+     toast.success(response.data.message);
+     router.push("/sign-in");
+
+   } catch (error) {
+     // Use AxiosError type to define error
+      const axiosError = error as AxiosError<{ message: string }>;
+      // Handle errors from Axios
+     if (axiosError.response) {
+      const{ status, data } = axiosError.response;
+      if(status === 400 || status === 500) {
+        setError(data.message);
+      }else{
+        setError("An unexpected error occurred.");
+      }
+   }else{
+    setError("Failed to connect to the server.");
+   }
+   setPending(false);
+  }
   };
 
   const handleProvider = async (
@@ -112,8 +126,8 @@ const SignUp = () => {
               }
               required
             />
-            <Button className="w-full" size="lg" disabled={pending}>
-              Continue
+            <Button className="w-full" size="lg" type="submit" disabled={pending}>
+              {pending ? "submitting..." : "submit"}
             </Button>
           </form>
           <Separator />
@@ -149,5 +163,3 @@ const SignUp = () => {
     </div>
   );
 };
-
-export default SignUp;
