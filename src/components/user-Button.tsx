@@ -1,30 +1,26 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { Loader } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-
 const UserButton = () => {
-
   const router = useRouter();
-  const { data: session, status} = useSession()
+  const { data: session } = useSession();
 
-  if (status === "loading") {
-    return(
-      <Loader className="size-6 mr-4 mt-4 float-right animate-spin" />
-    )
-  }
-
-  const avatarFallback = session?.user?.name?.charAt(0).toUpperCase()
+  const avatarFallback = session?.user?.name?.charAt(0).toUpperCase();
   const handleSignOut = async () => {
     await signOut({
-      redirect :false
+      redirect: false,
     });
-    router.push("/")
-  }
+    router.push("/");
+  };
 
   return (
     <nav>
@@ -62,6 +58,6 @@ const UserButton = () => {
       )}
     </nav>
   );
-}
+};
 
 export default UserButton;

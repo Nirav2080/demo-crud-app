@@ -5,7 +5,7 @@ import { SessionProvider } from "next-auth/react";
 const Navbar = () => {
 
   return (
-    <div className="flex items-center justify-end bg-white px-4 py-3 sticky z-50 top-0 shadow-md overflow-x-auto  ">
+    <div className="flex items-center justify-end bg-white px-4 py-3 sticky z-40 top-0 shadow-md overflow-x-auto  ">
       {/* Icons */}
       <div className="flex items-center">
         <SessionProvider>
